@@ -4,9 +4,9 @@ export const Header = () => {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3">
           <img
-            src="/logo-placeholder.svg"
-            alt="Logo Allianz"
-            className="h-8 w-auto"
+            src="https://images.email-platform.com/venturestars/allianz-logo.png"
+            alt="Allianz"
+            className="h-8 w-auto object-contain"
           />
           <div className="flex flex-col">
             <span className="text-xs uppercase tracking-wide text-slate-500">Portal de cliente</span>
@@ -17,4 +17,3 @@ export const Header = () => {
     </header>
   );
 };
-
