@@ -69,6 +69,21 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     [state.steps, state.activeStepId]
   );
 
+  const skipOptionalStep = async () => {
+    const current = activeStep;
+    if (!current || !current.optional) return;
+
+    dispatch({ type: "SKIP_OPTIONAL_STEP", payload: { stepId: current.id } });
+
+    const currentIndex = state.steps.findIndex((s) => s.id === current.id);
+    const nextStep = state.steps.find((_, idx) => idx > currentIndex);
+
+    if (nextStep) {
+      dispatch({ type: "NEXT_STEP" });
+      const nextPrompt = getBotPromptForStep(nextStep);
+      await sendBotChunksSequentially(nextPrompt, nextStep.id);
+    }
+  };
   const startReembolsoFlow = () => {
     if (state.flowStarted) return;
     const firstStep = state.steps[0];
@@ -162,6 +177,34 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       );
 
       if (response.ok) {
+        // Guardar documento validado para el envío final a DANA
+        const base64ForSubmit = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = reader.result;
+            if (typeof result === "string") {
+              const [, b64] = result.split(",");
+              resolve(b64 ?? "");
+            } else {
+              reject(new Error("No se pudo leer el archivo para envío final."));
+            }
+          };
+          reader.onerror = () =>
+            reject(new Error("Error al leer el archivo para envío final."));
+          reader.readAsDataURL(file);
+        });
+
+        dispatch({
+          type: "STORE_COMPLETED_DOC",
+          payload: {
+            stepId: activeStep.id,
+            doc: {
+              filename: file.name,
+              base64: base64ForSubmit
+            }
+          }
+        });
+
         dispatch({ type: "VALIDATION_OK", payload: { stepId: activeStep.id, response } });
         const okText = getBotMessageOnValidationOk(activeStep);
         await sendBotChunksSequentially(okText, activeStep.id);
@@ -218,7 +261,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     resetFlow,
     activeStep,
     startReembolsoFlow,
-    chooseOtherTopic
+    chooseOtherTopic,
+    skipOptionalStep
   };
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;

@@ -59,7 +59,8 @@ export const STEP_CONFIG: StepConfig[] = [
       "Fecha del presupuesto"
     ],
     validationHint:
-      "Sube el presupuesto de honorarios médicos donde se especifiquen conceptos, montos estimados y datos del médico y/o hospital."
+      "Sube el presupuesto de honorarios médicos donde se especifiquen conceptos, montos estimados y datos del médico y/o hospital. Si no aplica para tu caso, podrás omitir este documento.",
+    optional: true
   },
   {
     id: "address_id",

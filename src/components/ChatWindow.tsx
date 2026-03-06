@@ -15,6 +15,7 @@ export const ChatWindow = () => {
     flowStarted,
     startReembolsoFlow,
     chooseOtherTopic,
+    skipOptionalStep,
     isBotTyping
   } = useChat();
   const [text, setText] = useState("");
@@ -148,6 +149,18 @@ export const ChatWindow = () => {
                 className="inline-flex items-center rounded-full border border-border bg-white/80 px-4 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 Otro
+              </button>
+            </div>
+          )}
+          {flowStarted && activeStep?.optional && !isValidating && (
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-600">
+              <span>Este documento es opcional.</span>
+              <button
+                type="button"
+                onClick={skipOptionalStep}
+                className="inline-flex items-center rounded-full border border-border bg-white/90 px-3 py-1 font-medium text-slate-700 shadow-sm transition hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              >
+                Omitir este documento
               </button>
             </div>
           )}

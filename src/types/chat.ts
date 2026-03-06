@@ -26,12 +26,18 @@ export interface UploadInfo {
   extracted?: ValidationResponse["extracted"];
 }
 
+export interface CompletedDocument {
+  filename: string;
+  base64: string;
+}
+
 export interface ChatState {
   steps: StepState[];
   activeStepId: string | null;
   messages: ChatMessage[];
   uploads: Record<string, UploadInfo | undefined>;
   uploadsHistory: UploadInfo[];
+  completedDocuments: Record<string, CompletedDocument | undefined>;
   conversationId: string;
   flowStarted: boolean;
   topic: "reembolso" | "otro" | null;
@@ -50,7 +56,9 @@ export type ChatAction =
   | { type: "NEXT_STEP" }
   | { type: "RESET_STEP_FILE"; payload: { stepId: string } }
   | { type: "START_FLOW"; payload: { topic: "reembolso" | "otro" } }
-  | { type: "SET_BOT_TYPING"; payload: { typing: boolean } };
+  | { type: "SET_BOT_TYPING"; payload: { typing: boolean } }
+  | { type: "SKIP_OPTIONAL_STEP"; payload: { stepId: string } }
+  | { type: "STORE_COMPLETED_DOC"; payload: { stepId: string; doc: CompletedDocument } };
 
 export interface ChatContextValue extends ChatState {
   sendUserMessage: (text: string) => void;

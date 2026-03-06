@@ -22,7 +22,8 @@ export const initialChatState: ChatState = {
   flowStarted: false,
   topic: null,
   isBotTyping: false,
-  uploadsHistory: []
+  uploadsHistory: [],
+  completedDocuments: {}
 };
 
 export const chatReducer = (state: ChatState, action: ChatAction): ChatState => {
@@ -205,6 +206,26 @@ export const chatReducer = (state: ChatState, action: ChatAction): ChatState => 
       return {
         ...state,
         isBotTyping: action.payload.typing
+      };
+    }
+    case "SKIP_OPTIONAL_STEP": {
+      const { stepId } = action.payload;
+      const updatedSteps = state.steps.map((s) =>
+        s.id === stepId ? { ...s, status: "done" } : s
+      );
+      return {
+        ...state,
+        steps: updatedSteps
+      };
+    }
+    case "STORE_COMPLETED_DOC": {
+      const { stepId, doc } = action.payload;
+      return {
+        ...state,
+        completedDocuments: {
+          ...state.completedDocuments,
+          [stepId]: doc
+        }
       };
     }
     default:

@@ -10,6 +10,10 @@ export const ChatFlowPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Consideramos que el flujo termina cuando TODOS los documentos
+    // (obligatorios u opcionales) han sido resueltos, es decir, están en "done".
+    // Los opcionales pueden marcarse como "done" ya sea subiendo archivo
+    // o usando el botón "Omitir este documento".
     const allDone = steps.length > 0 && steps.every((s) => s.status === "done");
     if (allDone) {
       navigate("/success");
